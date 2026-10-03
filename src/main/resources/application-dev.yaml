@@ -1,0 +1,12 @@
+
+spring:
+    datasource:
+        url: jdbc:postgresql://localhost:5433/notification_service
+        username: lucas
+        password: postgres
+        driver-class-name: org.postgresql.Driver
+    
+        
+jwt:
+    secret: bWFrZS10aGlzLWEtMzItYnl0ZS1zZWNyZXQta2V5ISE=
+    expiration: 3600000
