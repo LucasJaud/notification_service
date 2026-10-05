@@ -5,6 +5,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import com.jaud.lucas.notification_service.auth.entities.User;
+
 @Service 
 public class UserService implements UserDetailsService {
 
@@ -15,8 +17,14 @@ public class UserService implements UserDetailsService {
     }
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return userRepository.loadUserByUsername(username);
+    public User loadUserByUsername(String username) throws UsernameNotFoundException {
+        return userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException(username));
+    }
+
+    public boolean usernameAlreadyExists(String username){
+        User user = userRepository.findByUsername(username).orElse(null);
+
+        return user != null;
     }
     
 }

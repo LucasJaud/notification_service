@@ -1,0 +1,27 @@
+@baseurl = "ttp://localhost:8080/api"
+@token = ""
+###
+
+
+GET http://localhost:8080/api/v1/auth/default-user
+
+### 
+
+POST http://localhost:8080/api/v1/auth/authenticate
+Content-Type: application/json
+
+{
+    "username": "admin",
+    "password": "admin"
+}
+
+###
+
+POST http://localhost:8080/api/v1/auth/register
+Content-Type: application/json
+
+{
+    "username": "admin",
+    "password": "admin"
+}
+

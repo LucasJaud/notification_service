@@ -1,0 +1,9 @@
+package com.jaud.lucas.notification_service.exceptions;
+
+
+public class UsernameAlreadyExistsException extends RuntimeException{
+    
+    public UsernameAlreadyExistsException(String msg){
+        super(msg);
+    }
+}
