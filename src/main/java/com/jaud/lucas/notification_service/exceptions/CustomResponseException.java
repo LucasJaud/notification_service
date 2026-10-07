@@ -1,5 +1,7 @@
 package com.jaud.lucas.notification_service.exceptions;
 
-public record CustomResponseException(String Exception, String msg) {
+import java.time.Instant;
+
+public record CustomResponseException(String path,String exception, String msg, Instant datetime) {
    
 }
