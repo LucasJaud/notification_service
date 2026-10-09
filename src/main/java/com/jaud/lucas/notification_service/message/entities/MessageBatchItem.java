@@ -3,6 +3,8 @@ package com.jaud.lucas.notification_service.message.entities;
 import java.time.Instant;
 import java.util.UUID;
 
+import com.jaud.lucas.notification_service.message.Message;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -33,4 +35,5 @@ public class MessageBatchItem {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "batch_id", nullable = false)
     private MessageBatch batch;
+
 }

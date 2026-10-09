@@ -16,6 +16,16 @@ spring:
         # properties:    
         #     '[hibernate.generate_statistics]': true
         #     '[hibernate.format_sql]': true
+    rabbitmq:
+      host: localhost
+      port: 5672
+      username: admin
+      password: admin
+      queue-name: msg-http
+      exchange: msg-http-ex
+      template:
+        routing-key: msg-http
+        # routing-key: ${RABBITMQ_ROUTING_KEY}
 
 logging:
   level:
