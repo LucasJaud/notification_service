@@ -6,20 +6,30 @@ import java.util.Set;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity 
-@Data 
+@NoArgsConstructor 
+@AllArgsConstructor 
+@Getter 
+@Setter 
 @Table(name = "tb_message_batch")
 public class MessageBatch {
 
-    @Id 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @OneToMany(mappedBy = "batch", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "batch")
     private Set<MessageBatchItem> messages;
     
 

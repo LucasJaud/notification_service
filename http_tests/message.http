@@ -1,4 +1,4 @@
-@token = eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc5MTI0ODcxOCwiZXhwIjoxNzkxMjUyMzE4fQ.5ZxjG0SI1_pHTcd_8Bf-mtDYjTzsbKmGTid9Yuhms0w
+@token = eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc5MTU4NzI2NywiZXhwIjoxNzkxNTkwODY3fQ.Jw-mMtOu6mZZBdYVZ_evdzu1EbyfR0VE5nAirB42dR0
 
 @baseurl = http://localhost:8080/api/v1
 
@@ -6,9 +6,26 @@
 
 POST {{baseurl}}/message/add-message
 Authorization: Bearer {{token}}
+Content-Type: application/json
 
 {
-
+  "messages": [
+    {
+      "payload": {
+        "id": 1,
+        "type": "notification",
+        "content": "Primeira mensagem"
+      }
+    },
+    {
+      "payload": {
+        "id": 2,
+        "type": "event",
+        "content": "Segunda mensagem"
+      }
+    }
+  ]
 }
 
 ### 
+

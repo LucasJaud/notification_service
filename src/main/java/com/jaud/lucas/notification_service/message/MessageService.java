@@ -12,10 +12,9 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jaud.lucas.notification_service.exceptions.InvalidPayloadException;
 import com.jaud.lucas.notification_service.exceptions.MessageProcessingException;
+import com.jaud.lucas.notification_service.message.dtos.MessageBatchDTO;
 import com.jaud.lucas.notification_service.message.dtos.RequestBatchMessage;
 import com.jaud.lucas.notification_service.message.entities.MessageBatch;
 import com.jaud.lucas.notification_service.message.entities.MessageBatchItem;
@@ -25,6 +24,8 @@ import com.jaud.lucas.notification_service.message.repositories.MessageBatchIten
 import com.jaud.lucas.notification_service.message.repositories.MessageBatchRepository;
 
 import jakarta.persistence.EntityNotFoundException;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
 
 @Service
 public class MessageService {
@@ -43,18 +44,17 @@ public class MessageService {
     }
 
     @Transactional 
-    public MessageBatch createBatchMessage(RequestBatchMessage request) throws JsonProcessingException{
+    public MessageBatchDTO createBatchMessage(RequestBatchMessage request){
         MessageBatch batch = new MessageBatch();
         batch.setMessages(new HashSet<>());
         batch.setCreatedAt(Instant.now());
-
-        List<Message> messages = transformMessages(request);
-        sendToProducer(messages);
-
-        saveMessages(batch, messages);
         MessageBatch savedBatch = batchRepository.save(batch);
 
-        return savedBatch;
+        List<Message> messages = generateMessages(request);
+        sendToProducer(messages);
+        saveMessages(batch, messages);
+
+        return MessageBatchDTO.generateMessageBatch(savedBatch);
     }
 
     public MessageBatchItem getItem(UUID uuid){
@@ -67,7 +67,7 @@ public class MessageService {
         }
     }
 
-    private List<Message> transformMessages(RequestBatchMessage request) throws InvalidPayloadException{
+    private List<Message> generateMessages(RequestBatchMessage request) throws InvalidPayloadException{
         List<Message> messagesToQueue = new LinkedList<>();
         ObjectMapper mapper = new ObjectMapper();
         request.messages().forEach(msg -> {
@@ -77,7 +77,7 @@ public class MessageService {
                     .payload(mapper.writeValueAsString(msg.payload()))
                     .build();
                 messagesToQueue.add(messageToQueue);
-            } catch (JsonProcessingException e) {
+            } catch (JacksonException e) {
                 logger.error("Error on message paylod {} caused error: {}",msg.payload(), e.getMessage());
                 throw new InvalidPayloadException("Error processing message payload");
             }
@@ -103,6 +103,7 @@ public class MessageService {
             MessageBatchItem msgBatch = new MessageBatchItem();
             msgBatch.setStatus(MessageStatus.PENDING);
             msgBatch.setId(msg.getId());
+            msgBatch.setBatch(batch);
             batch.addMessage(msgBatch);
             itensRepository.save(msgBatch);
         });
