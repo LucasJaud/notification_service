@@ -21,8 +21,8 @@ spring:
       port: 5672
       username: admin
       password: admin
-      queue-name: msg-http
-      exchange: msg-http-ex
+      queue-name: msg-http-queue
+      exchange: msg-http-queue-ex
       listener:
         direct:
           acknowledge-mode: manual
