@@ -1,0 +1,119 @@
+{
+    "permissions": [
+        {
+            "configure": ".*",
+            "read": ".*",
+            "user": "admin",
+            "vhost": "/",
+            "write": ".*"
+        }
+    ],
+    "rabbitmq_version": "4.3.6",
+    "product_name": "RabbitMQ",
+    "product_version": "4.3.6",
+    "rabbit_version": "4.3.6",
+    "exchanges": [
+        {
+            "arguments": {},
+            "auto_delete": false,
+            "durable": true,
+            "name": "amq.rabbitmq.log",
+            "type": "topic",
+            "vhost": "/"
+        },
+        {
+            "arguments": {},
+            "auto_delete": false,
+            "durable": true,
+            "name": "msg-http-queue-ex",
+            "type": "direct",
+            "vhost": "/"
+        },
+        {
+            "arguments": {},
+            "auto_delete": false,
+            "durable": true,
+            "name": "msg-http-dlq-ex",
+            "type": "direct",
+            "vhost": "/"
+        }
+    ],
+    "vhosts": [
+        {
+            "limits": {},
+            "metadata": {
+                "description": "Default virtual host",
+                "tags": [],
+                "default_queue_type": "classic"
+            },
+            "name": "/"
+        }
+    ],
+    "users": [
+        {
+            "hashing_algorithm": "rabbit_password_hashing_sha256",
+            "limits": {},
+            "name": "admin",
+            "password_hash": "fHuWBk+8mweiXmiHIm3/YveIv0aK+KROBGz0bG9qKynrx2Rg",
+            "tags": [
+                "administrator"
+            ]
+        }
+    ],
+    "global_parameters": [
+        {
+            "name": "cluster_tags",
+            "value": []
+        }
+    ],
+    "parameters": [],
+    "policies": [],
+    "topic_permissions": [],
+    "explanation": "Definitions of cluster 'rabbit@rabbitmq'",
+    "rabbitmq_definition_format": "cluster",
+    "original_cluster_name": "rabbit@rabbitmq",
+    "queues": [
+        {
+            "arguments": {
+                "x-message-ttl": 172800000,
+                "x-queue-type": "classic"
+            },
+            "auto_delete": false,
+            "durable": true,
+            "name": "msg-htp-dlq",
+            "type": "classic",
+            "vhost": "/"
+        },
+        {
+            "arguments": {
+                "x-dead-letter-exchange": "msg-http-dlq-ex",
+                "x-dead-letter-routing-key": "dlq-http",
+                "x-max-length-bytes": 10485760,
+                "x-queue-type": "classic"
+            },
+            "auto_delete": false,
+            "durable": true,
+            "name": "msg-http-queue",
+            "type": "classic",
+            "vhost": "/"
+        }
+    ],
+    "bindings": [
+        {
+            "arguments": {},
+            "destination": "msg-http-queue",
+            "destination_type": "queue",
+            "routing_key": "msg-http",
+            "source": "msg-http-queue-ex",
+            "vhost": "/"
+        },
+        {
+            "arguments": {},
+            "destination": "msg-htp-dlq",
+            "destination_type": "queue",
+            "routing_key": "dlq-http",
+            "source": "msg-http-dlq-ex",
+            "vhost": "/"
+        }
+    ]
+}

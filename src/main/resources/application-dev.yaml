@@ -23,6 +23,10 @@ spring:
       password: admin
       queue-name: msg-http
       exchange: msg-http-ex
+      listener:
+        direct:
+          acknowledge-mode: manual
+          prefetch: 10
       template:
         routing-key: msg-http
         # routing-key: ${RABBITMQ_ROUTING_KEY}
