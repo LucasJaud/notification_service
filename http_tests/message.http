@@ -1,5 +1,4 @@
-@token = eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc5MTU4NzI2NywiZXhwIjoxNzkxNTkwODY3fQ.Jw-mMtOu6mZZBdYVZ_evdzu1EbyfR0VE5nAirB42dR0
-
+@token = eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc5MTk0NTMzMSwiZXhwIjoxNzkxOTQ4OTMxfQ.zEra22ukELzbcYOw7XqQYKbKfzE2W3lFnYswZG2kifg
 @baseurl = http://localhost:8080/api/v1
 
 ###
