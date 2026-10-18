@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import com.jaud.lucas.notification_service.message.Message;
 
 @Service("rabbitmq")
-public class RabbitmqProduce implements Producer {
+public class RabbitmqProducer implements Producer {
 
     private final RabbitMessagingTemplate rabbitTemplate;
     
@@ -18,7 +18,7 @@ public class RabbitmqProduce implements Producer {
     private  String routingKey;
 
 
-    public RabbitmqProduce(RabbitMessagingTemplate rabbitTemplate){
+    public RabbitmqProducer(RabbitMessagingTemplate rabbitTemplate){
         this.rabbitTemplate = rabbitTemplate;
     }
 

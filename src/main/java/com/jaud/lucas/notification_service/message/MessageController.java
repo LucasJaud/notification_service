@@ -22,7 +22,6 @@ public class MessageController {
 
     @PostMapping("/add-message")
     public ResponseEntity<MessageBatchDTO> addMessage(@RequestBody RequestBatchMessage request){
-
         return ResponseEntity.status(HttpStatus.CREATED).body(messageService.createBatchMessage(request));
     }
     

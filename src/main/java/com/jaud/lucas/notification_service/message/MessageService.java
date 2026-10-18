@@ -9,9 +9,15 @@ import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.HttpClientErrorException;
 
+import com.jaud.lucas.notification_service.exceptions.DuplicatedMessageException;
+import com.jaud.lucas.notification_service.exceptions.HttpRequestException;
 import com.jaud.lucas.notification_service.exceptions.InvalidPayloadException;
 import com.jaud.lucas.notification_service.exceptions.MessageProcessingException;
 import com.jaud.lucas.notification_service.message.dtos.MessageBatchDTO;
@@ -19,9 +25,12 @@ import com.jaud.lucas.notification_service.message.dtos.RequestBatchMessage;
 import com.jaud.lucas.notification_service.message.entities.MessageBatch;
 import com.jaud.lucas.notification_service.message.entities.MessageBatchItem;
 import com.jaud.lucas.notification_service.message.entities.MessageStatus;
+import com.jaud.lucas.notification_service.message.entities.ProcessedMessage;
 import com.jaud.lucas.notification_service.message.producer.Producer;
 import com.jaud.lucas.notification_service.message.repositories.MessageBatchItensRepository;
 import com.jaud.lucas.notification_service.message.repositories.MessageBatchRepository;
+import com.jaud.lucas.notification_service.message.repositories.ProcessedMessageRepository;
+import com.jaud.lucas.notification_service.rest.CustomRestClient;
 
 import jakarta.persistence.EntityNotFoundException;
 import tools.jackson.core.JacksonException;
@@ -34,13 +43,16 @@ public class MessageService {
     private final MessageBatchItensRepository itensRepository;
     private final Logger logger = LoggerFactory.getLogger(MessageService.class);
     private final Producer producer;
+    private final ProcessedMessageRepository processedMessageRepository;
 
     public MessageService(MessageBatchRepository batchRepository,
             MessageBatchItensRepository itensRepository, 
-            @Qualifier("rabbitmq") Producer producer){
+            @Qualifier("rabbitmq") Producer producer,
+            ProcessedMessageRepository processedMessageRepository){
         this.batchRepository = batchRepository;
         this.itensRepository = itensRepository;
         this.producer = producer;
+        this.processedMessageRepository = processedMessageRepository;
     }
 
     @Transactional 
@@ -74,7 +86,8 @@ public class MessageService {
             try {
                 Message messageToQueue = Message.builder()
                     .id(UUID.randomUUID())
-                    .payload(mapper.writeValueAsString(msg.payload()))
+                    .payload(msg.payload())
+                    .urlString(msg.url())
                     .build();
                 messagesToQueue.add(messageToQueue);
             } catch (JacksonException e) {
@@ -107,6 +120,33 @@ public class MessageService {
             batch.addMessage(msgBatch);
             itensRepository.save(msgBatch);
         });
+    }
+
+    public void processMessage(Message message) throws IllegalArgumentException {
+        CustomRestClient client = new CustomRestClient();
+        ResponseEntity<Void> response = client.sendRequest(message);
+        if(!response.getStatusCode().is2xxSuccessful()){
+            logger.error(""); 
+            throw new HttpClientErrorException(response.getStatusCode());
+        }
+    }
+
+    public void checkProcessedMessage(Message message) throws DuplicatedMessageException{
+        ProcessedMessage processedMessage = ProcessedMessage
+            .builder()
+            .id(message.getId())
+            .processedAt(Instant.now())
+            .build();
+        try{
+            processedMessageRepository.saveAndFlush(processedMessage);
+        } catch (DataIntegrityViolationException ex){
+            throw new DuplicatedMessageException("message was already processed");
+        }   
+    }
+
+    @Transactional 
+    public void updateBatchItemStatus(Message message, MessageStatus status ){
+        itensRepository.updateBatchItemStatus(message.getId(), status);
     }
     
 }

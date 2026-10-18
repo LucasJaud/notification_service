@@ -24,7 +24,7 @@ spring:
       queue-name: msg-http-queue
       exchange: msg-http-queue-ex
       listener:
-        direct:
+        simple:
           acknowledge-mode: manual
           prefetch: 10
       template:
