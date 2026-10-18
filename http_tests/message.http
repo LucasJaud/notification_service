@@ -1,5 +1,8 @@
-@token = eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc5MTk0NTMzMSwiZXhwIjoxNzkxOTQ4OTMxfQ.zEra22ukELzbcYOw7XqQYKbKfzE2W3lFnYswZG2kifg
+@token = eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc5MjI4OTQ2NywiZXhwIjoxNzkyMjkzMDY3fQ.ScQwQggxrF9TqxwiGieBtXWZaHx6pdYQ3zSBE7MYNM8
+
 @baseurl = http://localhost:8080/api/v1
+
+@URL = {URL}
 
 ###
 
@@ -10,6 +13,7 @@ Content-Type: application/json
 {
   "messages": [
     {
+      "url": {{URL}},
       "payload": {
         "id": 1,
         "type": "notification",
@@ -17,6 +21,7 @@ Content-Type: application/json
       }
     },
     {
+      "url": {{URL}},
       "payload": {
         "id": 2,
         "type": "event",
