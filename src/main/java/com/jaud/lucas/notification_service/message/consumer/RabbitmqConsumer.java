@@ -46,21 +46,17 @@ public class RabbitmqConsumer implements Consumer{
             nack(channel, tag, false);
             logger.error("Ilegall url argument at {}",message.getUrlString());
             status = MessageStatus.FAILED;
-            // throw new ProcessingMessageException("Error processing message");
         } catch(HttpClientErrorException | HttpServerErrorException ex) {
             nack(channel, tag, true);
             logger.error("Error sending request to {}, error: {}", message.getUrlString(), ex);
             status = MessageStatus.FAILED;
-            // throw new ProcessingMessageException("Error processing message");
         } catch (DuplicatedMessageException ex){
             status = MessageStatus.PROCESSED;
             ack(channel, tag);
-            // throw new ProcessingMessageException("Error processing message");
         } catch (Exception ex){
             nack(channel, tag, true);
             logger.error("Unexpected error: {}", ex);
             status = MessageStatus.FAILED;
-            // throw new ProcessingMessageException("Error processing message");
         } finally {
             messageService.updateBatchItemStatus(message, status);
         }
