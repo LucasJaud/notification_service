@@ -38,8 +38,9 @@ public class RabbitmqConsumer implements Consumer{
         
         MessageStatus status = MessageStatus.PROCESSED;
         try {
-            messageService.checkProcessedMessage(message);
+            messageService.checkProcessedMessageExists(message);
             receive(message);
+            messageService.saveProcessedMessage(message);
             ack(channel, tag);
         } catch(IllegalArgumentException ex) {
             nack(channel, tag, false);

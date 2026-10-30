@@ -10,14 +10,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.HttpClientErrorException;
 
 import com.jaud.lucas.notification_service.exceptions.DuplicatedMessageException;
-import com.jaud.lucas.notification_service.exceptions.HttpRequestException;
 import com.jaud.lucas.notification_service.exceptions.InvalidPayloadException;
 import com.jaud.lucas.notification_service.exceptions.MessageProcessingException;
 import com.jaud.lucas.notification_service.message.dtos.MessageBatchDTO;
@@ -34,7 +32,6 @@ import com.jaud.lucas.notification_service.rest.CustomRestClient;
 
 import jakarta.persistence.EntityNotFoundException;
 import tools.jackson.core.JacksonException;
-import tools.jackson.databind.ObjectMapper;
 
 @Service
 public class MessageService {
@@ -81,7 +78,6 @@ public class MessageService {
 
     private List<Message> generateMessages(RequestBatchMessage request) throws InvalidPayloadException{
         List<Message> messagesToQueue = new LinkedList<>();
-        ObjectMapper mapper = new ObjectMapper();
         request.messages().forEach(msg -> {
             try {
                 Message messageToQueue = Message.builder()
@@ -131,7 +127,11 @@ public class MessageService {
         }
     }
 
-    public void checkProcessedMessage(Message message) throws DuplicatedMessageException{
+    public void checkProcessedMessageExists(Message message){
+        processedMessageRepository.findById(message.getId()).orElseThrow(() -> new DuplicatedMessageException("this message was already processed"));
+    }
+
+    public void saveProcessedMessage(Message message) throws DuplicatedMessageException{
         ProcessedMessage processedMessage = ProcessedMessage
             .builder()
             .id(message.getId())
